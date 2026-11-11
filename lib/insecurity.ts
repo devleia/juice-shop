@@ -139,13 +139,23 @@ export const redirectAllowlist = new Set([
   'http://leanpub.com/juice-shop'
 ])
 
-export const isRedirectAllowed = (url: string) => {
-  let allowed = false
-  for (const allowedUrl of redirectAllowlist) {
-    allowed = allowed || url.includes(allowedUrl) // vuln-code-snippet vuln-line redirectChallenge
+// Only exact allowlist entries are accepted. The caller gets back the entry
+// from the server-side allowlist itself, so the redirect target is never the
+// user-supplied string and an allowed URL hidden inside a foreign URL (query,
+// fragment, user-info, look-alike host) no longer passes the check.
+export const getAllowedRedirect = (url: unknown): string | undefined => {
+  if (typeof url !== 'string') {
+    return undefined
   }
-  return allowed
+  for (const allowedUrl of redirectAllowlist) {
+    if (allowedUrl === url) {
+      return allowedUrl
+    }
+  }
+  return undefined
 }
+
+export const isRedirectAllowed = (url: unknown) => getAllowedRedirect(url) !== undefined
 // vuln-code-snippet end redirectCryptoCurrencyChallenge redirectChallenge
 
 export const roles = {
