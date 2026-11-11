@@ -84,7 +84,7 @@ function subtitleScriptTag (safeSubs: string) {
 }
 
 function escapeForScriptTag (text: string) {
-  return text.replace(/<\//g, '<\\/').replace(/<!--/g, '<\\!--')
+  return text.split('</').join('<\\/').split('<!--').join('<\\!--')
 }
 
 function getSubsFromFile () {
